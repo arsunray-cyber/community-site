@@ -9,10 +9,7 @@
 
 # Dependencies
 node_modules/
-.venv/
-venv/
-__pycache__/
-*.egg-info/
+
 dist/
 build/
 target/
@@ -24,9 +21,11 @@ target/
 *.swp
 *.swo
 
-# Editors
+# IDE files
 .vscode/
 .idea/
+*.swp
+*.swo
 
 # OS
 .DS_Store
@@ -40,9 +39,6 @@ htmlcov/
 # Python specific
 *.pyc
 *.pyo
-*.pyd
-.Python
-*.so
 
 # Compressed files
 *.zip
