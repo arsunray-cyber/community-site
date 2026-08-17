@@ -20,10 +20,18 @@ export default function TrusteesPage() {
         .select('*')
         .order('display_order', { ascending: true })
 
-      if (error) throw error
-      setTrustees(data || [])
+      if (error) {
+        // Don't log error if it's just "no rows found" (PGRST116)
+        if (error.code !== 'PGRST116') {
+          console.error('Error fetching trustees:', error)
+        }
+        setTrustees([])
+      } else {
+        setTrustees(data || [])
+      }
     } catch (error) {
-      console.error('Error fetching trustees:', error)
+      console.error('Unexpected error fetching trustees:', error)
+      setTrustees([])
     } finally {
       setIsLoading(false)
     }
@@ -41,6 +49,10 @@ export default function TrusteesPage() {
       {isLoading ? (
         <div className="text-center py-12">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+      ) : trustees.length === 0 ? (
+        <div className="text-center py-12 bg-white rounded-lg shadow">
+          <p className="text-gray-500">No trustee information available yet.</p>
         </div>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -81,12 +93,6 @@ export default function TrusteesPage() {
               </div>
             </div>
           ))}
-        </div>
-      )}
-      
-      {trustees.length === 0 && !isLoading && (
-        <div className="text-center py-12 bg-white rounded-lg shadow">
-          <p className="text-gray-500">No trustee information available yet.</p>
         </div>
       )}
     </div>
