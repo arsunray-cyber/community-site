@@ -288,6 +288,54 @@ CREATE TRIGGER update_trustees_updated_at
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- ============================================
+-- APP CONFIG TABLE (for admin settings)
+-- ============================================
+CREATE TABLE app_config (
+    id SERIAL PRIMARY KEY,
+    smtp_host TEXT,
+    smtp_port INTEGER,
+    smtp_user TEXT,
+    smtp_password TEXT,
+    email_from TEXT,
+    resend_api_key TEXT,
+    twilio_sid TEXT,
+    twilio_token TEXT,
+    twilio_phone TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Enable RLS
+ALTER TABLE app_config ENABLE ROW LEVEL SECURITY;
+
+-- RLS Policies for app_config
+-- Only admins can read/write config
+CREATE POLICY "Admins can view app config"
+    ON app_config FOR SELECT
+    USING (
+        EXISTS (
+            SELECT 1 FROM profiles p 
+            WHERE p.id = auth.uid() 
+            AND p.role = 'ADMIN'
+        )
+    );
+
+CREATE POLICY "Admins can update app config"
+    ON app_config FOR ALL
+    USING (
+        EXISTS (
+            SELECT 1 FROM profiles p 
+            WHERE p.id = auth.uid() 
+            AND p.role = 'ADMIN'
+        )
+    );
+
+-- Trigger to update timestamp
+CREATE TRIGGER update_app_config_updated_at
+    BEFORE UPDATE ON app_config
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- ============================================
 -- STORAGE BUCKET SETUP
 -- ============================================
 -- Note: Run this in Supabase Dashboard > Storage or via API
