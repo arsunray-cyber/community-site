@@ -1,0 +1,34 @@
+# ============================================
+# Netlify Configuration for Community Portal
+# ============================================
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+  functions = "netlify/functions"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Redirect all non-API routes to Next.js
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# API routes should go to serverless functions
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# Environment variables (documented, not stored in git)
+# Required environment variables:
+# - SUPABASE_URL
+# - SUPABASE_ANON_KEY
+# - NEXT_PUBLIC_SUPABASE_URL
+# - NEXT_PUBLIC_SUPABASE_ANON_KEY
