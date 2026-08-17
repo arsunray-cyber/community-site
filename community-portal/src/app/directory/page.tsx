@@ -24,15 +24,31 @@ export default function DirectoryPage() {
 
       if (error) {
         // Don't log error if it's just "no rows found" (PGRST116)
-        if (error.code !== 'PGRST116') {
+        const isNoRows = 
+          error.code === 'PGRST116' || 
+          (error.message && error.message.includes('No rows')) ||
+          (error.details && error.details.includes('Result contains no rows'));
+        
+        if (!isNoRows) {
           console.error('Error fetching members:', error)
         }
         setMembers([])
       } else {
         setMembers(data || [])
       }
-    } catch (error) {
-      console.error('Unexpected error fetching members:', error)
+    } catch (error: any) {
+      // Suppress errors for missing tables or no rows during initial setup
+      const isSetupError = 
+        error?.code === 'PGRST116' ||
+        (error?.message && (
+          error.message.includes('No rows') || 
+          error.message.includes('relation') || 
+          error.message.includes('does not exist')
+        ));
+      
+      if (!isSetupError) {
+        console.error('Unexpected error fetching members:', error)
+      }
       setMembers([])
     } finally {
       setIsLoading(false)
