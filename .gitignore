@@ -2,7 +2,7 @@
 # Dependencies
 node_modules/
 
-# Build artifacts
+# Build outputs
 dist/
 build/
 .next/
@@ -13,9 +13,11 @@ out/
 .env.local
 .env.*
 
-# Editors
+# IDE files
 .vscode/
 .idea/
+*.swp
+*.swo
 
 # Python
 __pycache__/
@@ -39,21 +41,12 @@ coverage.xml
 *.pot
 *.pyc
 *.pyo
-*.pyd
-.MF
-tags
-TAGS
-*.swp
-*.swo
-*~
-.DS_Store
-Thumbs.db
+.pytest_cache/
+.mypy_cache/
+.hypothesis/
 
 # Logs
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 
 # OS generated files
 .DS_Store
