@@ -1,6 +1,6 @@
 ```
-# Dependencies
-node_modules/
+# Database
+*.sql
 
 # Python
 __pycache__/
