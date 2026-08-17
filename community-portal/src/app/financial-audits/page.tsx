@@ -20,10 +20,18 @@ export default function FinancialAuditsPage() {
         .select('*')
         .order('fiscal_year', { ascending: false })
 
-      if (error) throw error
-      setAudits(data || [])
+      if (error) {
+        // Don't log error if it's just "no rows found" (PGRST116)
+        if (error.code !== 'PGRST116') {
+          console.error('Error fetching audits:', error)
+        }
+        setAudits([])
+      } else {
+        setAudits(data || [])
+      }
     } catch (error) {
-      console.error('Error fetching audits:', error)
+      console.error('Unexpected error fetching audits:', error)
+      setAudits([])
     } finally {
       setIsLoading(false)
     }

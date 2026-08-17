@@ -22,10 +22,18 @@ export default function DirectoryPage() {
         .eq('approval_status', 'APPROVED')
         .order('full_name', { ascending: true })
 
-      if (error) throw error
-      setMembers(data || [])
+      if (error) {
+        // Don't log error if it's just "no rows found" (PGRST116)
+        if (error.code !== 'PGRST116') {
+          console.error('Error fetching members:', error)
+        }
+        setMembers([])
+      } else {
+        setMembers(data || [])
+      }
     } catch (error) {
-      console.error('Error fetching members:', error)
+      console.error('Unexpected error fetching members:', error)
+      setMembers([])
     } finally {
       setIsLoading(false)
     }

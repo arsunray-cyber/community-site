@@ -20,10 +20,18 @@ export default function AnnouncementsPage() {
         .select('*')
         .order('published_date', { ascending: false })
 
-      if (error) throw error
-      setAnnouncements(data || [])
+      if (error) {
+        // Don't log error if it's just "no rows found" (PGRST116)
+        if (error.code !== 'PGRST116') {
+          console.error('Error fetching announcements:', error)
+        }
+        setAnnouncements([])
+      } else {
+        setAnnouncements(data || [])
+      }
     } catch (error) {
-      console.error('Error fetching announcements:', error)
+      console.error('Unexpected error fetching announcements:', error)
+      setAnnouncements([])
     } finally {
       setIsLoading(false)
     }

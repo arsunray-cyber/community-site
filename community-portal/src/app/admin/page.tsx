@@ -22,10 +22,18 @@ export default function AdminPage() {
         .eq('approval_status', 'PENDING_APPROVAL')
         .order('created_at', { ascending: false })
 
-      if (error) throw error
-      setPendingMembers(data || [])
+      if (error) {
+        // Don't log error if it's just "no rows found" (PGRST116)
+        if (error.code !== 'PGRST116') {
+          console.error('Error fetching pending members:', error)
+        }
+        setPendingMembers([])
+      } else {
+        setPendingMembers(data || [])
+      }
     } catch (error) {
-      console.error('Error fetching pending members:', error)
+      console.error('Unexpected error fetching pending members:', error)
+      setPendingMembers([])
     } finally {
       setIsLoading(false)
     }
